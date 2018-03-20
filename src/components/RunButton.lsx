@@ -1,0 +1,35 @@
+import React from 'react'
+import Button from 'react-mdl/lib/Button'
+
+import pure from 'recompose/pure'
+import compose from 'recompose/compose'
+import withPropsFromObservables from 'hawks/lib/withPropsFromObservables'
+
+run(code) ->
+  external = window.open()
+  script = external.window.document.createElement('script')
+  script.textContent = code
+  external.window.document.body.appendChild(script)
+
+enhance = compose(
+  pure
+  withPropsFromObservables! (props) ->
+    ({
+      compiled: props.fixture.compiled$
+    })
+)
+
+RunButton = enhance(RunButton(props) ->
+  code = props.compiled?.js
+  <Button
+    raised
+    ripple
+    disabled={not code}
+    style={{ margin: 5 }}
+    onClick={-> if code: run(code)}
+  >
+    Run
+  </Button>
+)
+
+export default RunButton
